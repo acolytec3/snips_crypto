@@ -25,10 +25,10 @@ def read_configuration_file(configuration_file):
         return dict()
 
 def exchangeRate(hermes, intentMessage):
-        fromCurrency =intentMessage.slots.from_currency[0].slot_value.value.value
-        toCurrency = intentMessage.slots.to_currency[0].slot_value.value.value
-	rate = exchange.fetch_ticker(fromCurrency+'/'+toCurrency)['info']['spot']['data']['amount']
-        return 'One ' + fromCurrency + ' is equal to ' + rate + ' in ' + toCurrency
+        quoteCurrency =intentMessage.slots.quoteCurrency[0].slot_value.value.value
+        baseCurrency = intentMessage.slots.basecurrency[0].slot_value.value.value
+	rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
+        return 'One ' + baseCurrency + ' is equal to ' + rate + ' in ' + quoteCurrency
 
 def exchangeRate_callback(hermes, intentMessage):
         message = exchangeRate(hermes, intentMessage)
