@@ -1,0 +1,8 @@
+ccxt==1.17.372
+certifi==2018.8.24
+chardet==3.0.4
+idna==2.7
+pkg-resources==0.0.0
+requests==2.19.1
+requests-cache==0.4.13
+urllib3==1.23
