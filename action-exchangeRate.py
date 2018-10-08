@@ -25,13 +25,15 @@ def read_configuration_file(configuration_file):
         return dict()
 
 def exchangeRate(hermes, intentMessage):
-        quoteCurrency =intentMessage.slots.quoteCurrency[0].slot_value.value.value
-        baseCurrency = intentMessage.slots.basecurrency[0].slot_value.value.value
+        quoteCurrency = intentMessage.slots.quoteCurrency[0].slot_value.value.value
+        baseCurrency = intentMessage.slots.baseCurrency[0].slot_value.value.value
 	try:
 		rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
 	        return 'One ' + baseCurrency + ' is equal to ' + rate + ' in ' + quoteCurrency
+	except ccxt.errors.ExchangeError:
+		return "That exchange rate is not available on this exchange"
 	except:
-		return 'That data is not available at the moment'
+		return 'That data is not currently available'
 
 def exchangeRate_callback(hermes, intentMessage):
         message = exchangeRate(hermes, intentMessage)
@@ -42,7 +44,7 @@ if __name__ == "__main__":
 #       config = read_configuration_file(CONFIG_INI)
 
         with Hermes("localhost:1883") as h:
-                h.subscribe_intent("konjou:exchange_rate",exchangeRate_callback).start()
+                h.subscribe_intent("konjou:exchangeRate",exchangeRate_callback).start()
 
 
 
