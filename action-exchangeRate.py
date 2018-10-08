@@ -5,11 +5,13 @@ import ConfigParser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
 import ccxt
+import io
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
 
-exchange = ccxt.coinbase()
+marketName = ''
+exchange = ''
 
 class SnipsConfigParser(ConfigParser.SafeConfigParser):
     def to_dict(self):
@@ -41,7 +43,9 @@ def exchangeRate_callback(hermes, intentMessage):
 
 
 if __name__ == "__main__":
-#       config = read_configuration_file(CONFIG_INI)
+	config = read_configuration_file(CONFIG_INI)
+	marketName = config['global']['exchange']
+	exchange = getattr(ccxt,marketName)()
 
         with Hermes("localhost:1883") as h:
                 h.subscribe_intent("konjou:exchangeRate",exchangeRate_callback).start()
