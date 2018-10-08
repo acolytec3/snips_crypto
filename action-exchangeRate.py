@@ -27,8 +27,11 @@ def read_configuration_file(configuration_file):
 def exchangeRate(hermes, intentMessage):
         quoteCurrency =intentMessage.slots.quoteCurrency[0].slot_value.value.value
         baseCurrency = intentMessage.slots.basecurrency[0].slot_value.value.value
-	rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
-        return 'One ' + baseCurrency + ' is equal to ' + rate + ' in ' + quoteCurrency
+	try:
+		rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
+	        return 'One ' + baseCurrency + ' is equal to ' + rate + ' in ' + quoteCurrency
+	except:
+		return 'That data is not available at the moment'
 
 def exchangeRate_callback(hermes, intentMessage):
         message = exchangeRate(hermes, intentMessage)
