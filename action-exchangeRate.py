@@ -6,6 +6,7 @@ from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
 import ccxt
 import io
+import coinList
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
@@ -29,9 +30,11 @@ def read_configuration_file(configuration_file):
 def exchangeRate(hermes, intentMessage):
         quoteCurrency = intentMessage.slots.quoteCurrency[0].slot_value.value.value
         baseCurrency = intentMessage.slots.baseCurrency[0].slot_value.value.value
+	print(quoteCurrency)
+	print(baseCurrency)
 	try:
 		rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
-	        return 'One ' + baseCurrency + ' is equal to ' + rate + ' in ' + quoteCurrency
+	        return 'One ' + coinList.coins[baseCurrency] + ' is equal to ' + rate + ' in ' + coinList.coins[quoteCurrency]
 	except ccxt.errors.ExchangeError:
 		return "That exchange rate is not available on this exchange"
 	except:
@@ -43,11 +46,9 @@ def exchangeRate_callback(hermes, intentMessage):
 
 
 if __name__ == "__main__":
-	config = read_configuration_file(CONFIG_INI)
-	marketName = config['global']['exchange']
-	exchange = getattr(ccxt,marketName)()
-
-        with Hermes("localhost:1883") as h:
+#	config = read_configuration_file(CONFIG_INI)
+	exchange = ccxt.coinbase()
+        with Hermes("local:1883") as h:
                 h.subscribe_intent("konjou:exchangeRate",exchangeRate_callback).start()
 
 
