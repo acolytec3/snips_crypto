@@ -3,4 +3,4 @@ hermes-python>=0.1
 future
 
 #crypto library
-ccxt
+coinmarketcap
