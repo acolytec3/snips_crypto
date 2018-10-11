@@ -37,8 +37,8 @@ def airTokenBalance_callback(hermes, intentMessage):
 
 if __name__ == "__main__":
 	config = read_configuration_file(CONFIG_INI)
-        with Hermes("192.168.1.16:1883") as h:
-                h.subscribe_intent("konjou:airTokenBalance",exchangeRate_callback).start()
+        with Hermes("localhost:1883") as h:
+                h.subscribe_intent("konjou:airTokenBalance",airTokenBalance_callback).start()
 
 
 
