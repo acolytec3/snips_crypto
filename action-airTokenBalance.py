@@ -31,7 +31,7 @@ def airTokenBalance_callback(hermes, intentMessage):
 	r = requests.post(url,data=values)
 	tree = html.fromstring(r.content)
 	tokens = tree.xpath('//*[@id="react_div"]/div/header/div[2]/div[2]/a/div/div[1]/text()')
-	message = 'Your current snips air token balance is ' + tokens
+	message = 'Your current snips air token balance is ' + tokens[0]
         hermes.publish_end_session(intentMessage.session_id, message)
 
 
