@@ -49,7 +49,7 @@ def exchangeRate_callback(hermes, intentMessage):
 
 if __name__ == "__main__":
 	config = read_configuration_file(CONFIG_INI)
-        with Hermes("192.168.1.16:1883") as h:
+        with Hermes("localhost:1883") as h:
                 h.subscribe_intent("konjou:exchangeRate",exchangeRate_callback).start()
 
 
