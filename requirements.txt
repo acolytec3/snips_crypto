@@ -2,7 +2,6 @@
 hermes-python>=0.1
 future
 
-#crypto library
-coinmarketcap
+#crypto libraries
 requests
 lxml
