@@ -4,16 +4,15 @@
 import ConfigParser
 from hermes_python.hermes import Hermes
 from hermes_python.ontology import *
-from coinmarketcap import Market
+import ccxt
 import io
-import coinDict
+import coinList
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
 
-
-coins = Market()
-coinList = coins.listings()['data']
+marketName = ''
+exchange = ''
 
 class SnipsConfigParser(ConfigParser.SafeConfigParser):
     def to_dict(self):
@@ -34,11 +33,14 @@ def exchangeRate(hermes, intentMessage):
 	print(quoteCurrency)
 	print(baseCurrency)
 
-	result = next((x for x in coinList if x['symbol'] == 'BTC'),None)
-	rate = coins.ticker(result['id'])['data']['quotes'][config['global']['quote']]['price']
-	print(rate)
 	try:
-	        return 'One ' + coinDict.coins[baseCurrency] + ' is equal to ' + str(round(rate,2)).encode('UTF-8') + ' in ' + coinDict.coins[quoteCurrency]
+		ticker = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)
+		rate = ticker['info']['spot']['data']['amount']
+		print(ticker)
+#		rate = exchange.fetch_ticker(baseCurrency+'/'+quoteCurrency)['info']['spot']['data']['amount']
+	        return 'One ' + coinList.coins[baseCurrency] + ' is equal to ' + rate + ' in ' + coinList.coins[quoteCurrency]
+	except ccxt.errors.ExchangeError:
+		return "That exchange rate is not available on this exchange"
 	except:
 		return 'That data is not currently available'
 
@@ -48,8 +50,9 @@ def exchangeRate_callback(hermes, intentMessage):
 
 
 if __name__ == "__main__":
-	config = read_configuration_file(CONFIG_INI)
-        with Hermes("localhost:1883") as h:
+#	config = read_configuration_file(CONFIG_INI)
+	exchange = ccxt.coinbase()
+        with Hermes("192.168.1.16:1883") as h:
                 h.subscribe_intent("konjou:exchangeRate",exchangeRate_callback).start()
 
 

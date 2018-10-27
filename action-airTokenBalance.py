@@ -25,20 +25,39 @@ def read_configuration_file(configuration_file):
     except (IOError, ConfigParser.Error) as e:
         return dict()
 
-def airTokenBalance_callback(hermes, intentMessage):
+def airTokenBalance(intentMessage):
 	url = 'https://console.snips.ai/api/login'
 	values = {'email': config['secret']['username'], 'password': config['secret']['password']}
 	r = requests.post(url,data=values)
 	tree = html.fromstring(r.content)
 	tokens = tree.xpath('//*[@id="react_div"]/div/header/div[2]/div[2]/a/div/div[1]/text()')
-	message = 'Your current snips air token balance is ' + tokens[0]
-        hermes.publish_end_session(intentMessage.session_id, message)
+	return 'Your current snips air token balance is ' + tokens[0]
 
+def etherWalletBalance(intentMessage):
+	url = 'https://etherscan.io/address/'
+	address = config['secret']['etherwallet']
+	r = requests.get(url+address)
+	tree = html.fromstring(r.content)
+	tokens = tree.xpath('//div[@id="ContentPlaceHolder1_divSummary"]/div/table//text()')
+	balance = tokens[13]+tokens[14]+tokens[15]
+	print(balance)
+	eth = balance.split(' ')[0]
+	return round(float(eth),6)
+
+def balance_callback(hermes, intentMessage):
+	message = ''
+	if intentMessage.slots.currency[0].slot_value.value.value == 'ETH':
+		message = "Your ether balance is " + str(etherWalletBalance(intentMessage))
+	if intentMessage.slots.currency[0].slot_value.value.value == 'air':
+		message = "Your current snips air token balance is " + str(airTokenBalance(intentMessage))
+	if message == '':
+		message = "No balance found for that currency"
+        hermes.publish_end_session(intentMessage.session_id, message)
 
 if __name__ == "__main__":
 	config = read_configuration_file(CONFIG_INI)
         with Hermes("localhost:1883") as h:
-                h.subscribe_intent("konjou:airTokenBalance",airTokenBalance_callback).start()
+                h.subscribe_intent("konjou:airTokenBalance",balance_callback).start()
 
 
 
