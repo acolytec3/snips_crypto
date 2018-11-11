@@ -49,7 +49,7 @@ def balance_callback(hermes, intentMessage):
 	if intentMessage.slots.currency[0].slot_value.value.value == 'ETH':
 		message = "Your ether balance is " + str(etherWalletBalance(intentMessage))
 	if intentMessage.slots.currency[0].slot_value.value.value == 'air':
-		message = "Your current snips air token balance is " + str(airTokenBalance(intentMessage))
+		message = "You currently have " + str(airTokenBalance(intentMessage)) + " snips air tokens"
 	if message == '':
 		message = "No balance found for that currency"
         hermes.publish_end_session(intentMessage.session_id, message)
